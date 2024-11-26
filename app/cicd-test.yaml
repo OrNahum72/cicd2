@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - main
-    # paths-ignore:
-      # - .github/workflows/cicd.yaml
+    paths-ignore:
+      - .github/workflows/cicd.yaml
   pull_request:
     branches:
       - main
@@ -33,8 +33,7 @@ jobs:
         run: |
           cd app
           pytest
-
-  docker-build-push:
+ docker-build-push:
     runs-on: ubuntu-latest
     needs: build-test
 
@@ -55,16 +54,7 @@ jobs:
         run: |
           docker build -t users_app:v1 ./app
           docker tag users_app:v1 d4v5he/users_app:v1
-      - name: Install Trivy
-           if: inputs.skip_trivy_installation != 'true'
-      shell: bash
-        run: |
-          if ! command -v trivy &> /dev/null
-           then
-            echo "Trivy is not installed. Installing ..."
-            sudo curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin v0.54.1
-          else
-            echo "Trivy is installed"
+
       - name: Push Docker image
         run: docker push d4v5he/users_app:v1
 
